@@ -3,6 +3,7 @@ package com.example.bc_monitor.service;
 import com.example.bc_monitor.client.BinanceClient;
 import com.example.bc_monitor.dto.BinanceTicker24h;
 import com.example.bc_monitor.dto.PrecoColetado;
+import com.example.bc_monitor.producer.PrecoProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,14 @@ public class BtcService {
     private final BinanceClient binanceClient;
     private final Clock clock;
     private final String simbolo;
+    private final PrecoProducer precoProducer;
 
 
-    public BtcService(BinanceClient binanceClient, Clock clock, @Value("${btc.coleta.simbolo}") String simbolo) {
+    public BtcService(BinanceClient binanceClient, Clock clock, @Value("${btc.coleta.simbolo}") String simbolo, PrecoProducer precoProducer) {
         this.binanceClient = binanceClient;
         this.clock = clock;
         this.simbolo = simbolo;
-
+        this.precoProducer = precoProducer;
     }
 
     public void coletar() {
@@ -50,6 +52,7 @@ public class BtcService {
             }
 
             log.info("preço coletado: {}", preco);
+            precoProducer.publicar(preco);
         } catch (RestClientException e) {
             log.warn("falha ao coletar {}: {}", simbolo,
                     e.getMessage());
