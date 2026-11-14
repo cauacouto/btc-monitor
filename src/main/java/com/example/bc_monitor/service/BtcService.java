@@ -31,17 +31,31 @@ public class BtcService {
     public void coletar() {
         try {
             BinanceTicker24h ticker = binanceClient.buscarTicker(simbolo);
+            if (ticker == null){
+                log.warn("binance respondeu sem corpo para {}",simbolo);
+                return;
+            }
+
             PrecoColetado preco = new PrecoColetado(
+
                     ticker.symbol(),
                     new BigDecimal(ticker.lastPrice()),
                     new BigDecimal(ticker.priceChangePercent()),
                     Instant.now(clock)
+
             );
+            if (preco.preco().compareTo(BigDecimal.ZERO) <= 0){
+                log.warn("preço invalido para {}: {}", simbolo,preco.preco());
+                return;
+            }
+
             log.info("preço coletado: {}", preco);
         } catch (RestClientException e) {
             log.warn("falha ao coletar {}: {}", simbolo,
                     e.getMessage());
 
+        }catch (NumberFormatException e){
+            log.error("formato inesperado da binance para {}",simbolo,e);
         }
     }
 }
