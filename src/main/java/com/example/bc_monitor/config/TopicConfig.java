@@ -17,4 +17,12 @@ public class TopicConfig {
                 .replicas(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic topicosVariacoes (@Value("${btc.topicos.variacoes}") String nome){
+        return TopicBuilder.name(nome)
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
 }
