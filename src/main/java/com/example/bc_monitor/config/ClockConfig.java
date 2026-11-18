@@ -11,7 +11,7 @@ import java.time.Clock;
 public class ClockConfig {
 
     @Bean
-    public Clock Clock (){
-       return Clock.systemUTC();
+    public Clock clock() {
+        return Clock.systemUTC();
     }
 }
