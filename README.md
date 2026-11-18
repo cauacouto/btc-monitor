@@ -1,17 +1,33 @@
-# btc-monitor
+<p align="center">
+  <img src="https://cdn.simpleicons.org/bitcoin/F7931A" alt="Bitcoin" width="96" height="96">
+</p>
 
-[![CI](https://github.com/cauacouto/btc-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/cauacouto/btc-monitor/actions/workflows/ci.yml)
-![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F?logo=springboot&logoColor=white)
-![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-KRaft-231F20?logo=apachekafka&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker%20Compose-2496ED?logo=docker&logoColor=white)
-![Maven](https://img.shields.io/badge/Maven-C71A36?logo=apachemaven&logoColor=white)
-![Checkstyle](https://img.shields.io/badge/lint-Checkstyle-blue)
+<h1 align="center">btc-monitor</h1>
 
-Monitor de preço do Bitcoin orientado a eventos, construído para estudar e demonstrar **Apache Kafka com Spring Boot** na prática.
+<p align="center">
+  Monitor de preço do Bitcoin orientado a eventos, com <b>Apache Kafka</b> e <b>Spring Boot</b>.
+</p>
 
-A cada 30 segundos a aplicação consulta o preço do BTC na Binance e publica a leitura num tópico do Kafka. Um consumidor compara cada preço com o anterior, classifica o movimento como **SUBIU**, **CAIU** ou **ESTAVEL** e publica o resultado em outro tópico.
+<p align="center">
+  <a href="https://github.com/cauacouto/btc-monitor/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/cauacouto/btc-monitor/ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI" alt="CI"></a>
+  <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.coingecko.com%2Fapi%2Fv3%2Fsimple%2Fprice%3Fids%3Dbitcoin%26vs_currencies%3Dusd&query=%24.bitcoin.usd&prefix=%24&label=BTC%2FUSD&logo=bitcoin&logoColor=white&color=F7931A&style=for-the-badge&cacheSeconds=3600" alt="Preço do BTC">
+  <img src="https://img.shields.io/github/last-commit/cauacouto/btc-monitor?style=for-the-badge&logo=git&logoColor=white" alt="Último commit">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 21">
+  <img src="https://img.shields.io/badge/Spring%20Boot-4.1.2-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot 4.1.2">
+  <img src="https://img.shields.io/badge/Apache%20Kafka-4.2%20KRaft-231F20?style=for-the-badge&logo=apachekafka&logoColor=white" alt="Apache Kafka">
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Docker%20Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Compose">
+  <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" alt="Maven">
+  <img src="https://img.shields.io/badge/Binance%20API-F0B90B?style=for-the-badge&logo=binance&logoColor=black" alt="Binance API">
+  <img src="https://img.shields.io/badge/Checkstyle-lint-4B32C3?style=for-the-badge" alt="Checkstyle">
+</p>
+
+---
+
+A cada 30 segundos a aplicação consulta o preço do BTC na Binance e publica a leitura num tópico do Kafka. Um consumidor compara cada preço com o anterior, classifica o movimento como **SUBIU** 📈, **CAIU** 📉 ou **ESTAVEL** ➖ e publica o resultado em outro tópico.
 
 > Projeto de estudo e portfólio. Não é recomendação de investimento.
 
@@ -19,12 +35,12 @@ A cada 30 segundos a aplicação consulta o preço do BTC na Binance e publica a
 
 ```mermaid
 flowchart LR
-    B[Binance API<br/>ticker 24h] -->|REST, a cada 30 s| S[ColetaScheduler<br/>+ BtcService]
-    S -->|PrecoColetado<br/>chave = símbolo| T1[(btc.precos)]
-    T1 --> A[AnalisadorVariacao<br/>@KafkaListener]
-    A -->|VariacaoCalculada<br/>chave = símbolo| T2[(btc.variacoes)]
-    T2 -.->|fase 5| DB[(PostgreSQL)]
-    DB -.-> API[API REST]
+    B["Binance API<br/>ticker 24h"] -->|"REST a cada 30 s"| S["ColetaScheduler<br/>+ BtcService"]
+    S -->|"PrecoColetado<br/>chave = símbolo"| T1[("btc.precos")]
+    T1 --> A["AnalisadorVariacao<br/>KafkaListener"]
+    A -->|"VariacaoCalculada<br/>chave = símbolo"| T2[("btc.variacoes")]
+    T2 -.->|"fase 5"| DB[("PostgreSQL")]
+    DB -.-> API["API REST"]
 ```
 
 1. **Coleta**: um `@Scheduled` com `fixedDelay` chama o `BtcService`, que busca o ticker na Binance pelo `BinanceClient` (`RestClient` com timeouts), converte para `PrecoColetado` e publica em `btc.precos`.
